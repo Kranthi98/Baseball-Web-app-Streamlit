@@ -1,1 +1,8 @@
 pybaseball
+pandas
+numpy
+seaborn
+matplotlib
+altair
+plotly.express
+bokeh.plotting
