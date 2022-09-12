@@ -9,4 +9,6 @@ Its just a file that consists of the abbreviations and full forms of pitch types
 
 As of now(11/09/2022) the work is still in progress. Will update it here once iam done.
 
+Deployed it here : https://kranthi98-baseball-web-app-streamlit-main-msw2o8.streamlitapp.com/
+
 Thanks.
