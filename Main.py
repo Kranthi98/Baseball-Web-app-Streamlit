@@ -5,7 +5,6 @@ Created on Sat Sep 10 10:24:26 2022
 @author: SHIVA
 """
 
-!pip install pybaseball
 import streamlit as st
 import pybaseball as pb
 import pandas as pd
