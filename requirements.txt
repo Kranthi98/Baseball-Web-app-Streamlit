@@ -5,4 +5,4 @@ seaborn
 matplotlib
 altair
 plotly.express
-bokeh.plotting
+bokeh
