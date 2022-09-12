@@ -27,11 +27,12 @@ AwTm = st.sidebar.selectbox(label = "Select the Away team", options = pb.teams()
 
 start_date = str(st.sidebar.date_input(label = "Enter the start date"))
 end_date = str(st.sidebar.date_input(label = "Enter the end date"))
+pitchers = pb.pitching_stats_range(start_dt = start_date, end_dt = end_date)["Name"].unique()
 pitcher1 = st.sidebar.selectbox(label = "Select the pitcher1",
-                       options = pb.pitching_stats_range(start_dt = start_date, end_dt = end_date)["Name"].unique())
+                       options = pitchers)
 
 pitcher2 = st.sidebar.selectbox(label = "Select the pitcher2",
-                       options = pb.pitching_stats_range(start_dt = start_date, end_dt = end_date)["Name"].unique())
+                       options = pitchers)
 
 pt_dict = pd.read_csv("Pitch_types.csv").set_index("Abb").to_dict()["Full"]
 
