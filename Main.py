@@ -48,7 +48,7 @@ start_date = str(st.sidebar.date_input(label = "Enter the start date", value = d
 end_date = str(st.sidebar.date_input(label = "Enter the end date"))
 
 
-name_split = lambda x : x.split(" ") if "." not in x else x.rsplit(".",1)
+name_split = lambda x : x.split(" ") if "." not in x else x.replace(" ","").rsplit(".",1)
 name_clean = lambda y : list(reversed([(x+".").replace(".",". ").rstrip() if "." in x else x for x in y]))
 
 
