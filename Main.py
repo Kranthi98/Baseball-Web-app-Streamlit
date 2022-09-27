@@ -14,68 +14,91 @@ import seaborn as sns
 import plotly.express as px
 from bokeh.plotting import figure
 import altair as alt
+import datetime
+import os
+import warnings
+warnings.filterwarnings('ignore')
+
+
+
 
 st.set_page_config(
     page_title = "Baseball Stats",
     page_icon = "⚾",
     layout = "wide")
 
-st.title("Baseball Sabermetrics")
-st.sidebar.success("Filters")
-HmTm = st.sidebar.selectbox(label = "Select the Home Team", options = pb.teams().query("yearID == 2021")["name"].unique())
-AwTm = st.sidebar.selectbox(label = "Select the Away team", options = pb.teams().query("yearID == 2021")["name"].unique())
+c1, c2 = st.columns((8,2))
+with c1:
+    st.title("Baseball Sabermetrics")
+with c2:
+    fg = st.selectbox(label = "select stat type",
+    options = ["FanGraph","Pitch_Splits"], index = 0 )
 
-start_date = str(st.sidebar.date_input(label = "Enter the start date"))
+
+exec(open('Stats_functions.py').read())
+
+
+
+teams = pb.teams().query("yearID == 2021")["name"].unique()
+HmTm = st.sidebar.selectbox(label = "Select the Home Team", options = teams)
+AwTm = st.sidebar.selectbox(label = "Select the Away team", options = teams)
+
+
+start_date = str(st.sidebar.date_input(label = "Enter the start date", value = datetime.date(2008, 7, 6)))
 end_date = str(st.sidebar.date_input(label = "Enter the end date"))
-pitchers = pb.pitching_stats_range(start_dt = start_date, end_dt = end_date)["Name"].unique()
-pitcher1 = st.sidebar.selectbox(label = "Select the pitcher1",
-                       options = pitchers)
 
-pitcher2 = st.sidebar.selectbox(label = "Select the pitcher2",
-                       options = pitchers)
 
+pitchers = list(pd.read_csv("Pitchers_2008-present.csv").Pitchers)
+pitcher1 = st.sidebar.selectbox(label = "Select the pitcher1",options = pitchers)
+pitcher2 = st.sidebar.selectbox(label = "Select the pitcher2",options = pitchers)
+
+
+batters = list(pd.read_csv("Batters_2008-present.csv").Batters)
+HmTm_lineup = st.sidebar.multiselect(label = "select the "+HmTm +" lineup", options = batters, key = "HmTM")
+AwTm_lineup = st.sidebar.multiselect(label = "select the "+AwTm +" lineup", options = batters, key = "AwTm")
 pt_dict = pd.read_csv("Pitch_types.csv").set_index("Abb").to_dict()["Full"]
+
 
 col1, col2 = st.columns((1,1))
 
 with col1:
-    st.subheader(f"Pitching stats for {pitcher1}")                  
-    st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher1}'")[[
-        "Season","Name","Team","Age","WAR","ERA","FIP","xFIP","K/9","HR/9","AVG","WHIP","BABIP",
-        "GB/FB",]])
-    pitcher1_df = pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher1.split(" ")[1],pitcher1.split(" ")[0])["key_mlbam"].values[0],
-                    start_dt = start_date, end_dt = end_date)
-    pitcher1_df.replace(pt_dict, inplace = True)
-    
+    st.subheader(f"Pitching stats for {pitcher1}")
 
+    #if fg == "Pitch_Splits":
+    pitcher1_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher1.split(" ")[1],pitcher1.split(" ")[0])["key_mlbam"].values[0],
+                start_dt = start_date, end_dt = end_date)
+                .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
+                events = lambda x : x.events.fillna("None")))
+    st.table(stats_by_pitchtypes(pitcher1_df))
+    # elif fg == "FanGraph":
+    #     st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher1}'")[[
+    #         "Season","Name","Team","Age","WAR","ERA","FIP","xFIP","K/9","HR/9","AVG","WHIP","BABIP","GB/FB",]])
+     
+ 
 
 
 with col2 : 
     st.subheader(f"Pitching stats for {pitcher2}")
-    st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher2}'")[[
-        "Season","Name","Team","Age","WAR","ERA","FIP","xFIP","K/9","HR/9","AVG","WHIP","BABIP",
-        "GB/FB",]])
-    pitcher2_df = pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher2.split(" ")[1],pitcher2.split(" ")[0])["key_mlbam"].values[0],
-                    start_dt = start_date, end_dt = end_date)
-    pitcher2_df.replace(pt_dict, inplace = True)
+    #if fg == "Pitch_Splits":
+    pitcher2_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher2.split(" ")[1],pitcher2.split(" ")[0])["key_mlbam"].values[0],
+                start_dt = start_date, end_dt = end_date)
+                .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
+                events = lambda x : x.events.fillna("None")))
+    st.table(stats_by_pitchtypes(pitcher2_df))
+    # elif fg == "FanGraph":
+    #     st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher2}'")[[
+    #         "Season","Name","Team","Age","WAR","ERA","FIP","xFIP","K/9","HR/9","AVG","WHIP","BABIP","GB/FB",]])
+     
 
 
 
 
-tab1,tab2 = st.tabs(["T1 : X1", "T2 : X2"])
+tab1,tab2 = st.tabs(["Home : "+HmTm, "Away : "+AwTm])
 
 
-with tab1:
 
 
-    st.write(pitcher2_df.head(3))
-    fig1 = alt.Chart(pitcher2_df).mark_bar().encode(x = "pitch_type",y = 'count(*):Q')
-    st.altair_chart(fig1)
-    
-with tab2:
 
-    fig2 = alt.Chart(pitcher1_df).mark_bar().encode(x = "pitch_type",y = 'count(*):Q')
-    st.altair_chart(fig2)
 
 
 

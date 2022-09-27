@@ -4,7 +4,7 @@ CU,Curveball
 FC,Cutter
 EP,Eephus
 FO,Forkball
-FA,Four-Seam Fastball
+FA,Fastball
 KN,Knuckleball
 KC,Knuckle-curve
 SC,Screwball
@@ -12,3 +12,5 @@ SI,Sinker
 SL,Slider
 FS,Splitter
 FT,Two-Seam Fastball
+FF,Four-Seam Fastball
+,NM
