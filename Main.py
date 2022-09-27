@@ -73,6 +73,7 @@ with col1:
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
+    remove_index()
     st.table(stats_by_pitchtypes(pitcher1_df))
     # elif fg == "FanGraph":
     #     st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher1}'")[[
@@ -88,6 +89,7 @@ with col2 :
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
+    remove_index()
     st.table(stats_by_pitchtypes(pitcher2_df))
     # elif fg == "FanGraph":
     #     st.write(pb.pitching_stats(start_season = int(start_date[0:4]), end_season = int(end_date[0:4])).query(f"Name == '{pitcher2}'")[[
