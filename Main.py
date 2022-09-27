@@ -48,7 +48,8 @@ start_date = str(st.sidebar.date_input(label = "Enter the start date", value = d
 end_date = str(st.sidebar.date_input(label = "Enter the end date"))
 
 
-name_split = lambda x : x.rsplit(".",1) if "." in x else x.split(" ")
+name_split = lambda x : x.split(" ") if "." not in x else x.rsplit(".",1)
+name_clean = lambda y : list(reversed([(x+".").replace(".",". ").rstrip() if "." in x else x for x in y]))
 
 
 pitchers = list(pd.read_csv("Pitchers_2008-present.csv").Pitchers)
@@ -68,7 +69,7 @@ with col1:
     st.subheader(f"Pitching stats for {pitcher1}")
 
     #if fg == "Pitch_Splits":
-    pitcher1_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(name_split(pitcher1)[1].strip(),name_split(pitcher1)[0].replace(".",". ").rstrip())["key_mlbam"].values[0],
+    pitcher1_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(*name_clean(name_split(pitcher1)))["key_mlbam"].values[0],
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
@@ -83,7 +84,7 @@ with col1:
 with col2 : 
     st.subheader(f"Pitching stats for {pitcher2}")
     #if fg == "Pitch_Splits":
-    pitcher2_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(name_split(pitcher2)[1].strip(),name_split(pitcher2)[0].replace(".",". ").rstrip())["key_mlbam"].values[0],
+    pitcher2_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(*name_clean(name_split(pitcher1)))["key_mlbam"].values[0],
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
