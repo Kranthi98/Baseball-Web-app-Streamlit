@@ -48,6 +48,9 @@ start_date = str(st.sidebar.date_input(label = "Enter the start date", value = d
 end_date = str(st.sidebar.date_input(label = "Enter the end date"))
 
 
+name_split = lambda x : x.rsplit(".",1) if "." in x else x.split(" ")
+
+
 pitchers = list(pd.read_csv("Pitchers_2008-present.csv").Pitchers)
 pitcher1 = st.sidebar.selectbox(label = "Select the pitcher1",options = pitchers)
 pitcher2 = st.sidebar.selectbox(label = "Select the pitcher2",options = pitchers)
@@ -65,7 +68,7 @@ with col1:
     st.subheader(f"Pitching stats for {pitcher1}")
 
     #if fg == "Pitch_Splits":
-    pitcher1_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher1.split(" ")[1],pitcher1.split(" ")[0])["key_mlbam"].values[0],
+    pitcher1_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(name_split(pitcher1)[1],name_split(pitcher1)[0])["key_mlbam"].values[0],
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
@@ -80,7 +83,7 @@ with col1:
 with col2 : 
     st.subheader(f"Pitching stats for {pitcher2}")
     #if fg == "Pitch_Splits":
-    pitcher2_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(pitcher2.split(" ")[1],pitcher2.split(" ")[0])["key_mlbam"].values[0],
+    pitcher2_df = (pb.statcast_pitcher(player_id = pb.playerid_lookup(name_split(pitcher2)[1],name_split(pitcher2)[0])["key_mlbam"].values[0],
                 start_dt = start_date, end_dt = end_date)
                 .assign(pitch_type = lambda x : x.pitch_type.replace(pt_dict),
                 events = lambda x : x.events.fillna("None")))
