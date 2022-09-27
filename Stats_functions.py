@@ -35,3 +35,17 @@ def stats_by_pitchtypes(df):
     
     cols = ['PT_per',"BA","SLG","OBP","ISO","BABIP","GB","FB","GBtoFB","HR_per_AB","HR_per_FB",]
     return df1[cols].reset_index().round(2)
+
+
+
+
+def remove_index():
+    # CSS to inject contained in a string
+    hide_table_row_index = """
+                <style>
+                tbody th {display:none}
+                .blank {display:none}
+                </style>
+                """
+# Inject CSS with Markdown
+    st.markdown(hide_table_row_index, unsafe_allow_html=True)
